@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: efs-csi-controller-sa
+  namespace: kube-system
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::759348358497:role/go-22-dev-eks-cluster_EFS_CSI_Dr_Role-20250925155441566000000001

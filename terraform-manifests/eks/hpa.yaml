@@ -1,0 +1,37 @@
+# hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-demo
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cpu-load-generator  # Deploymentの名前と一致させる
+  minReplicas: 1
+  maxReplicas: 20
+  metrics:
+  - type: ContainerResource
+    containerResource:
+      container: busybox  # Deploymentのコンテナ名と一致
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80  # CPU使用率50%でスケール
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 300
+      - type: Pods
+        value: 5
+        periodSeconds: 60  # 30秒ごとに1Pod増加
+    scaleDown:
+      stabilizationWindowSeconds: 60  # 1分待機後に削除
+      policies:
+      - type: Pods
+        value: 100
+        periodSeconds: 1800  # 30秒ごとに1Pod削除
+

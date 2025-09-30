@@ -1,0 +1,93 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-sc
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: fs-0464d062725d96ec2
+  directoryPerms: "777"
+  gidRangeStart: "500"
+  gidRangeEnd: "2000"
+#---
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: efs-pv
+#spec:
+#  capacity:
+#    storage: 5Gi
+#  volumeMode: Filesystem
+#  accessModes:
+#    - ReadWriteMany
+#  persistentVolumeReclaimPolicy: Retain
+#  storageClassName: efs-sc
+#  csi:
+#    driver: efs.csi.aws.com
+#    volumeHandle: fs-0464d062725d96ec2
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: efs-claim
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: efs-test
+spec:
+  containers:
+    - name: app
+      image: almalinux
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo $(date) >> /data/out.txt; sleep 5; done"]
+      volumeMounts:
+        - name: persistent-storage
+          mountPath: /data
+  volumes:
+    - name: persistent-storage
+      persistentVolumeClaim:
+        claimName: efs-claim
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: efs-test2
+spec:
+  containers:
+    - name: app
+      image: almalinux
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo $(date) >> /data/out2.txt; sleep 5; done"]
+      volumeMounts:
+        - name: persistent-storage
+          mountPath: /data
+  volumes:
+    - name: persistent-storage
+      persistentVolumeClaim:
+        claimName: efs-claim
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: efs-test3
+spec:
+  containers:
+    - name: app
+      image: almalinux
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo $(date) >> /data/out3.txt; sleep 5; done"]
+      volumeMounts:
+        - name: persistent-storage
+          mountPath: /data
+  volumes:
+    - name: persistent-storage
+      persistentVolumeClaim:
+        claimName: efs-claim

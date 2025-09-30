@@ -1,0 +1,13 @@
+apiVersion: eks.amazonaws.com/v1
+kind: NodeClass
+metadata:
+  name: graviton-nodeclass
+spec:
+  role: AmazonEKSAutoNodeRole
+  subnetSelectorTerms:
+    - id: "subnet-0adb9e38c161cd999"
+    - id: "subnet-0f108e4d722e91051"
+    - id: "subnet-0964fe7ce6c267b8f"
+  securityGroupSelectorTerms:
+    - id: "sg-0295fdac2610e7449"
+

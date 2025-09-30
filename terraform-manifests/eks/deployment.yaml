@@ -1,0 +1,29 @@
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cpu-load-generator
+  labels:
+    app: cpu-load-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cpu-load-generator
+  template:
+    metadata:
+      labels:
+        app: cpu-load-generator
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        resources:
+          requests:
+            cpu: "100m"  # 0.1 CPUコアをリクエスト
+          limits:
+            cpu: "200m"  # 0.2 CPUコアが上限
+        command: ["sh", "-c"]
+        args:
+        - while true; do echo 'Generating CPU load...'; timeout 0.5 sha256sum /dev/zero; sleep 0.5; done
+
