@@ -75,6 +75,14 @@ resource "kubectl_manifest" "karpenter_node_pool" {
   depends_on = [kubectl_manifest.karpenter_node_class, module.eks]
 }
 
+resource "aws_ecr_repository" "my_app" {
+  name = "my-app-repo"
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+  depends_on = [kubectl_manifest.karpenter_node_pool]
+}
+
 module "aws_efs_csi_pod_identity" {
   source  = "terraform-aws-modules/eks-pod-identity/aws"
   version = "2.0.0"
